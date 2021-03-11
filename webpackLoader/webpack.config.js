@@ -6,6 +6,9 @@ module.exports = {
     filename: 'webpack.bundle.js'
   },
   module: {
-    rules: []
+    rules: [{
+      test: /.js$/,
+      use: path.resolve(__dirname, 'loaders/trycatchLoader.js')
+    }]
   }
 }

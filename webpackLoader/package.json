@@ -17,6 +17,7 @@
     "babel-preset-stage-2": "^6.24.1"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.12.1"
+    "@babel/polyfill": "^7.12.1",
+    "loader-utils": "^2.0.0"
   }
 }
