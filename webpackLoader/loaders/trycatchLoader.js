@@ -50,6 +50,7 @@ module.exports = function(source) {
   let finallyNode =
     options.finallyCode && parser.parse(options.finallyCode).program.body;
 
+  console.log(ast,'----------ast-------', ast.program.body[1].declarations)
   /**
    *  只给最外层的 async 函数包裹 try/catch
    * **/
