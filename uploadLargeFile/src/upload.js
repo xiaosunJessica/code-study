@@ -1,20 +1,35 @@
 import React, { useRef, useState } from 'react';
 import cn from 'classnames';
 import './upload.less';
+import { createFileChunk } from './util'
+const Status = {
+  wait: "wait",
+  pause: "pause",
+  uploading: "uploading",
+  error: "error",
+  done: "done",
+};
 const Upload = () => {
 
   const [ chunks, setChunks ] = useState([]);
-  const fileContainer = useRef(null);
+
+  const fileContainer = useRef({});
+  const status = useRef(null);
+
   const handleInputChange = (e) => {
     const [ file ] = e.target.files;
     if (!file) return;
-    fileContainer.current = file;
+    fileContainer.current.file = file;
   }
 
   const handleUpload = (e) => {
     const file = fileContainer.current;
     if (!file) return;
-    
+    status.current = Status.uploading;
+    const chunks = createFileChunk(container.current)
+
+    // 计算hash,
+    container
   }
 
   const handleSlowStartUpload = () => {

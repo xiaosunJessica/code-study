@@ -1,4 +1,6 @@
 const baseUrl = 'http://localhost:3000';
+const SIZE = 0.2 * 1024 * 1024;
+
 export function request({
   url,
   method,
@@ -41,4 +43,17 @@ export async function post(url,data){
       }
   })
   return JSON.parse(ret.data)
+}
+
+export function createFileChunk(file, size = SIZE) {
+  const chunks = [];
+  let cur = 0;
+  while(cur < file.size) {
+    chunks.push({
+      file: file.slice(cur, cur+size)
+    })
+    cur += size
+  }
+
+  return chunks;
 }

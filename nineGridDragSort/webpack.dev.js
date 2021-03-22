@@ -1,23 +1,3 @@
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-// const path = require('path');
-// module.exports = {
-//   entry: './src/index.js', // 打包入口
-//   output: {
-//     path: path.resolve(__dirname, 'dist'), // 输出的绝对路径
-//   },
-//   devServer: {
-//     contentBase: path.join(__dirname, 'dist'),
-//     open: 'true', // 自动打开浏览器
-//     port: 8888, // 端口号
-//     hot: true, // 开启热更新，同时要配置相应的插件HotModuleReplacementPlugin
-//   },
-//   plugins: [
-//     new HtmlWebpackPlugin(),
-//     // new webpack.HotModuleReplacementPlugin() // 热更新插件
-//   ]
-// }
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
