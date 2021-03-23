@@ -29,7 +29,6 @@ const Upload = () => {
   }
 
   const sendRequest = async (urls, max=4, _chunks) => {
-    console.log('-------sendRequest-----------', chunks)
     return new Promise((resolve, reject) => {
       let len = urls.length;
       let idx = 0;
@@ -39,6 +38,7 @@ const Upload = () => {
         while(counter < len && max > 0) {
           max--; //占用通道
           const i = urls.findIndex(v => v.status == Status.wait || v.status === Status.error);
+          if (i === -1) break; // 没有等待和错误的结束
           urls[i].status = Status.uploading;
           const form = urls[i].form;
           const index = urls[i].index;
@@ -84,18 +84,22 @@ const Upload = () => {
   }
 
   const uploadChunks = async (uploadedList = [], _chunks) => {
-    console.log(chunks, '----chunkschunkschunks----')
     const list = _chunks.filter(chunk => uploadedList.indexOf(chunk.hash) === -1)
                       .map(({chunk, hash, index }, i) => {
                         const form = new FormData();
                         form.append("chunk", chunk);
                         form.append("hash", hash);
                         form.append("filename", fileContainer.current.file.name);
-                        form.append("fileHash", fileContainer.current.file.hash);
+                        form.append("fileHash", fileContainer.current.hash);
                         return {
                           form, index, status: Status.wait
                         }
                       })
+    console.log(_chunks.filter(chunk => {
+      console.log()
+      return uploadedList.indexOf(chunk.hash) === -1
+    }), '----chunkschunkschunks----', uploadedList)
+    
     try {
       await sendRequest(list, 4, _chunks);
       if (uploadedList.length + list.length === _chunks.length) {
@@ -137,7 +141,7 @@ const Upload = () => {
     }
 
     const _chunks = chunks.map((chunk, index) => {
-      const chunkName = fileContainer.hash + '-'+index;
+      const chunkName = fileContainer.current.hash + '-'+index;
       return {
         fileHash: fileContainer.current.hash,
         chunk: chunk.file,
@@ -151,7 +155,6 @@ const Upload = () => {
     setChunks(_chunks);
 
     // 传入已存在的切片清单
-    console.log(_chunks, '----chunkiiiiiiii')
     await uploadChunks(uploadedList, _chunks)
   }
 
