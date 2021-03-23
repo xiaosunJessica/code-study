@@ -20,6 +20,7 @@ server.on("request", async (req, res) => {
     res.end()
     return
   }
+
   if (req.method === "POST") {
     if (req.url == '/upload') {
       await ctrl.handleUpload(req,res)

@@ -44,6 +44,7 @@ exports.mergeFiles = async (files,dest,size)=>{
   // 返回已经上传切片名列表
 
 exports.getUploadedList = async (dirPath)=>{
+  console.log(fse.existsSync(dirPath) , 'fse.existsSync(dirPath) ', dirPath)
     return fse.existsSync(dirPath) 
       ? (await fse.readdir(dirPath)).filter(name=>name[0]!=='.') // 过滤诡异的隐藏文件
       : []

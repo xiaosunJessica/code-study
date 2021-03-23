@@ -1,9 +1,10 @@
+import SparkMD5 from "spark-md5"
 const baseUrl = 'http://localhost:3000';
-const SIZE = 0.2 * 1024 * 1024;
+export const SIZE = 0.2 * 1024 * 1024;
 
 export function request({
   url,
-  method,
+  method = "post",
   data,
   onProgress = e=> e,
   headers={},
@@ -29,7 +30,9 @@ export function request({
           reject('报错了')
         }
       }
-      requestList.push(xhr)
+      if (Array.isArray(requestList)) {
+        requestList.push(xhr)
+      }
     }
   })
 }
@@ -56,4 +59,38 @@ export function createFileChunk(file, size = SIZE) {
   }
 
   return chunks;
+}
+
+export async function calculateHashSample(file) {
+  return new Promise((resolve) => {
+    const spark = new SparkMD5.ArrayBuffer();
+    const reader = new FileReader();
+    const size = file.size;
+    let offset = 2 * 1024 * 1024;
+
+    let chunks = [file.slice(0, offset)];
+
+    let cur = offset;
+
+    while(cur < size) {
+      if (cur + offset >= size) {
+        chunks.push(file.slice(cur, cur + offset));
+      } else {
+        const mid = cur + offset/2;
+        const end = cur + offset;
+        chunks.push(file.slice(cur, cur + 2));
+        chunks.push(file.slice(mid, mid + 2));
+        chunks.push(file.slice(end - 2, end));
+      }
+      cur += offset;
+    }
+
+    reader.readAsArrayBuffer(new Blob(chunks));
+
+    reader.onload = e => {
+      spark.append(e.target.result);
+      resolve(spark.end())
+    }
+
+  })
 }
