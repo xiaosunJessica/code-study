@@ -95,11 +95,6 @@ const Upload = () => {
                           form, index, status: Status.wait
                         }
                       })
-    console.log(_chunks.filter(chunk => {
-      console.log()
-      return uploadedList.indexOf(chunk.hash) === -1
-    }), '----chunkschunkschunks----', uploadedList)
-    
     try {
       await sendRequest(list, 4, _chunks);
       if (uploadedList.length + list.length === _chunks.length) {
@@ -158,7 +153,46 @@ const Upload = () => {
     await uploadChunks(uploadedList, _chunks)
   }
 
-  const handleSlowStartUpload = () => {
+  const handleSlowStartUpload = async () => {
+    const {file} = fileContainer.current;
+   
+    if (!file) return;
+    status.current = Status.uploading;
+    
+    const fileSize = file.size;
+    let offset = 1024 * 1024;
+    let cur = 0;
+    let count = 0;
+    fileContainer.current.hash = await calculateHashSample(file);
+    while (cur < fileSize) {
+      console.log(cur, fileSize, '-----size---------')
+      const chunk = file.slice(cur, cur + offset);
+      cur+= offset;
+      const chunkName = fileContainer.current.hash + '-' + count;
+      const form = new FormData();
+      form.append('chunk', chunk);
+      form.append('hash', chunkName);
+      form.append('filename', file.name);
+      form.append('fileHash', fileContainer.current.hash);
+      form.append('size', chunk.size);
+
+      let start = new Date().getTime();
+      await request({
+        url: '/upload',
+        data: form
+      })
+
+      const now = new Date().getTime();
+      const time = ((now - start)/1000).toFixed(4);
+      let rate = time/30;
+      if (rate < 0.5) rate = 0.5;
+      if (rate < 2) rate = 2;
+      offset = parseInt(offset/rate)
+      count++
+    }
+
+
+
 
   }
   return (
